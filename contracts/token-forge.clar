@@ -102,3 +102,41 @@
         )
     )
 )
+
+;; ============================================================
+;; PUBLIC FUNCTIONS - TRADING
+;; ============================================================
+
+;; Buy tokens with enhanced validation
+(define-public (buy (amount uint))
+    (let (
+          (sender tx-sender)
+          (current-balance (default-to u0 (map-get? balances sender)))
+          (min-trade (var-get minimum-trade))
+          (max-trade (var-get maximum-trade))
+         )
+        (begin
+            ;; Validations
+            (asserts! (not (var-get trading-paused)) ERR_TRADING_PAUSED)
+            (asserts! (> amount u0) ERR_INVALID_AMOUNT)
+            (asserts! (>= amount min-trade) ERR_INVALID_AMOUNT)
+            (asserts! (<= amount max-trade) ERR_INVALID_AMOUNT)
+            
+            ;; Update user balance
+            (map-set balances sender (+ current-balance amount))
+            
+            ;; Update total supply
+            (var-set total-supply (+ (var-get total-supply) amount))
+            
+            ;; Record transaction
+            (record-transaction "buy" amount)
+            
+            (ok { 
+                action: "buy", 
+                amount: amount, 
+                new-balance: (+ current-balance amount),
+                price: (var-get token-price)
+            })
+        )
+    )
+)
