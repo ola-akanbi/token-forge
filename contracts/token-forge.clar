@@ -38,3 +38,36 @@
     principal
     uint
 )
+
+;; Store transaction details
+(define-map transactions
+    uint ;; transaction-id
+    {
+        user: principal,
+        action: (string-ascii 10),
+        amount: uint,
+        timestamp: uint,
+        price: uint
+    }
+)
+
+;; Allowances for transfers (like ERC20 approve/transferFrom)
+(define-map allowances
+    {owner: principal, spender: principal}
+    uint
+)
+
+;; Track locked tokens (for future staking/vesting features)
+(define-map locked-balances
+    principal
+    {
+        amount: uint,
+        unlock-height: uint
+    }
+)
+
+;; Whitelist for special privileges
+(define-map whitelist
+    principal
+    bool
+)
