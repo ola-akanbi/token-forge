@@ -293,3 +293,40 @@
         (ok { user: user, whitelisted: true })
     )
 )
+
+;; ============================================================
+;; READ-ONLY FUNCTIONS
+;; ============================================================
+
+;; Get user balance
+(define-read-only (get-balance (user principal))
+    (ok (default-to u0 (map-get? balances user)))
+)
+
+;; Get total supply
+(define-read-only (get-total-supply)
+    (ok (var-get total-supply))
+)
+
+;; Get current token price
+(define-read-only (get-token-price)
+    (ok (var-get token-price))
+)
+
+;; Check if trading is paused
+(define-read-only (is-trading-paused)
+    (ok (var-get trading-paused))
+)
+
+;; Get trade limits
+(define-read-only (get-trade-limits)
+    (ok {
+        minimum: (var-get minimum-trade),
+        maximum: (var-get maximum-trade)
+    })
+)
+
+;; Get user transaction count
+(define-read-only (get-user-transaction-count (user principal))
+    (ok (default-to u0 (map-get? user-transaction-count user)))
+)
