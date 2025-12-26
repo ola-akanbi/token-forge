@@ -250,3 +250,46 @@
         )
     )
 )
+
+;; ============================================================
+;; PUBLIC FUNCTIONS - ADMIN
+;; ============================================================
+
+;; Pause/unpause trading (owner only)
+(define-public (set-trading-paused (paused bool))
+    (begin
+        (asserts! (is-eq tx-sender CONTRACT_OWNER) ERR_UNAUTHORIZED)
+        (var-set trading-paused paused)
+        (ok { trading-paused: paused })
+    )
+)
+
+;; Update token price (owner only)
+(define-public (set-token-price (new-price uint))
+    (begin
+        (asserts! (is-eq tx-sender CONTRACT_OWNER) ERR_UNAUTHORIZED)
+        (asserts! (> new-price u0) ERR_PRICE_TOO_LOW)
+        (var-set token-price new-price)
+        (ok { new-price: new-price })
+    )
+)
+
+;; Set trade limits (owner only)
+(define-public (set-trade-limits (min uint) (max uint))
+    (begin
+        (asserts! (is-eq tx-sender CONTRACT_OWNER) ERR_UNAUTHORIZED)
+        (asserts! (< min max) ERR_INVALID_AMOUNT)
+        (var-set minimum-trade min)
+        (var-set maximum-trade max)
+        (ok { minimum: min, maximum: max })
+    )
+)
+
+;; Add to whitelist (owner only)
+(define-public (add-to-whitelist (user principal))
+    (begin
+        (asserts! (is-eq tx-sender CONTRACT_OWNER) ERR_UNAUTHORIZED)
+        (map-set whitelist user true)
+        (ok { user: user, whitelisted: true })
+    )
+)
