@@ -330,3 +330,39 @@
 (define-read-only (get-user-transaction-count (user principal))
     (ok (default-to u0 (map-get? user-transaction-count user)))
 )
+
+;; Get transaction details
+(define-read-only (get-transaction (tx-id uint))
+    (ok (map-get? transactions tx-id))
+)
+
+;; Get total transactions
+(define-read-only (get-total-transactions)
+    (ok (var-get total-transactions))
+)
+
+;; Get allowance
+(define-read-only (get-allowance (owner principal) (spender principal))
+    (ok (default-to u0 (map-get? allowances {owner: owner, spender: spender})))
+)
+
+;; Check if user is whitelisted
+(define-read-only (is-whitelisted (user principal))
+    (ok (default-to false (map-get? whitelist user)))
+)
+
+;; Get user's locked balance
+(define-read-only (get-locked-balance (user principal))
+    (ok (map-get? locked-balances user))
+)
+
+;; Get contract info
+(define-read-only (get-contract-info)
+    (ok {
+        total-supply: (var-get total-supply),
+        token-price: (var-get token-price),
+        trading-paused: (var-get trading-paused),
+        total-transactions: (var-get total-transactions),
+        contract-owner: CONTRACT_OWNER
+    })
+)
