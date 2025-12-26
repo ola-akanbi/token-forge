@@ -207,3 +207,46 @@
         )
     )
 )
+
+;; Approve spender to use tokens
+(define-public (approve (spender principal) (amount uint))
+    (begin
+        (asserts! (not (is-eq tx-sender spender)) ERR_INVALID_RECIPIENT)
+        (map-set allowances {owner: tx-sender, spender: spender} amount)
+        (ok { 
+            owner: tx-sender, 
+            spender: spender, 
+            amount: amount 
+        })
+    )
+)
+
+;; Transfer tokens on behalf of owner (requires approval)
+(define-public (transfer-from (owner principal) (recipient principal) (amount uint))
+    (let (
+          (allowance (default-to u0 (map-get? allowances {owner: owner, spender: tx-sender})))
+          (owner-balance (default-to u0 (map-get? balances owner)))
+          (recipient-balance (default-to u0 (map-get? balances recipient)))
+         )
+        (begin
+            ;; Validations
+            (asserts! (not (is-eq owner recipient)) ERR_INVALID_RECIPIENT)
+            (asserts! (>= allowance amount) ERR_UNAUTHORIZED)
+            (asserts! (>= owner-balance amount) ERR_INSUFFICIENT_BALANCE)
+            
+            ;; Update balances
+            (map-set balances owner (- owner-balance amount))
+            (map-set balances recipient (+ recipient-balance amount))
+            
+            ;; Update allowance
+            (map-set allowances {owner: owner, spender: tx-sender} (- allowance amount))
+            
+            (ok { 
+                action: "transfer-from",
+                from: owner,
+                to: recipient,
+                amount: amount
+            })
+        )
+    )
+)
