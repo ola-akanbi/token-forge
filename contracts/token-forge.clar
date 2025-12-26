@@ -71,3 +71,34 @@
     principal
     bool
 )
+
+;; ============================================================
+;; PRIVATE FUNCTIONS
+;; ============================================================
+
+(define-private (record-transaction (action (string-ascii 10)) (amount uint))
+    (let (
+          (tx-id (var-get total-transactions))
+          (sender tx-sender)
+          (current-count (default-to u0 (map-get? user-transaction-count sender)))
+         )
+        (begin
+            ;; Store transaction details
+            (map-set transactions tx-id {
+                user: sender,
+                action: action,
+                amount: amount,
+                timestamp: block-height,
+                price: (var-get token-price)
+            })
+            
+            ;; Update user transaction count
+            (map-set user-transaction-count sender (+ current-count u1))
+            
+            ;; Increment total transactions
+            (var-set total-transactions (+ tx-id u1))
+            
+            tx-id
+        )
+    )
+)
