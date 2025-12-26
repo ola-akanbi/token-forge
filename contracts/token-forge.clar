@@ -88,7 +88,7 @@
                 user: sender,
                 action: action,
                 amount: amount,
-                timestamp: block-height,
+                timestamp: stacks-block-height,
                 price: (var-get token-price)
             })
             
