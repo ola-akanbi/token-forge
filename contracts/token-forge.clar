@@ -173,3 +173,37 @@
         )
     )
 )
+
+;; ============================================================
+;; PUBLIC FUNCTIONS - TRANSFERS
+;; ============================================================
+
+;; Transfer tokens to another user
+(define-public (transfer (amount uint) (recipient principal))
+    (let (
+          (sender tx-sender)
+          (sender-balance (default-to u0 (map-get? balances sender)))
+          (recipient-balance (default-to u0 (map-get? balances recipient)))
+         )
+        (begin
+            ;; Validations
+            (asserts! (not (is-eq sender recipient)) ERR_INVALID_RECIPIENT)
+            (asserts! (> amount u0) ERR_INVALID_AMOUNT)
+            (asserts! (>= sender-balance amount) ERR_INSUFFICIENT_BALANCE)
+            
+            ;; Update balances
+            (map-set balances sender (- sender-balance amount))
+            (map-set balances recipient (+ recipient-balance amount))
+            
+            ;; Record transaction
+            (record-transaction "transfer" amount)
+            
+            (ok { 
+                action: "transfer",
+                from: sender,
+                to: recipient,
+                amount: amount
+            })
+        )
+    )
+)
