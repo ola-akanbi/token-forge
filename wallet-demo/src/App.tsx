@@ -1,5 +1,5 @@
 import React from 'react'
-import WalletConnectExample from '../../src/wallet/react/WalletConnectExample'
+import WalletConnectExample from './WalletConnectExample'
 
 export default function App() {
   return (
