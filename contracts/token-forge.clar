@@ -140,3 +140,36 @@
         )
     )
 )
+
+;; Sell tokens with enhanced validation
+(define-public (sell (amount uint))
+    (let (
+          (sender tx-sender)
+          (current-balance (default-to u0 (map-get? balances sender)))
+          (min-trade (var-get minimum-trade))
+         )
+        (begin
+            ;; Validations
+            (asserts! (not (var-get trading-paused)) ERR_TRADING_PAUSED)
+            (asserts! (> amount u0) ERR_INVALID_AMOUNT)
+            (asserts! (>= amount min-trade) ERR_INVALID_AMOUNT)
+            (asserts! (>= current-balance amount) ERR_INSUFFICIENT_BALANCE)
+            
+            ;; Update user balance
+            (map-set balances sender (- current-balance amount))
+            
+            ;; Update total supply
+            (var-set total-supply (- (var-get total-supply) amount))
+            
+            ;; Record transaction
+            (record-transaction "sell" amount)
+            
+            (ok { 
+                action: "sell", 
+                amount: amount, 
+                new-balance: (- current-balance amount),
+                price: (var-get token-price)
+            })
+        )
+    )
+)
