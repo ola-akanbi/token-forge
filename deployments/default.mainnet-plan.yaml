@@ -9,10 +9,10 @@ plan:
     - id: 0
       transactions:
         - contract-publish:
-            contract-name: token-forge
-            expected-sender: SP11MXPJA03GJ9FS5H6GWPWH3ZDNR7P1DSAPKP6KD
-            cost: 113580
-            path: contracts/token-forge.clar
+          contract-name: token-forge
+          expected-sender: SP11MXPJA03GJ9FS5H6GWPWH3ZDNR7P1DSAPKP6KD
+          cost: 113650
+          path: contracts/token-forge.clar
             anchor-block-only: true
             clarity-version: 4
       epoch: "3.3"
